@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Is Claude 2× Active?</title>
+  <style>
+    body { max-width: 560px; margin: 40px auto; padding: 0 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    table { border-collapse: collapse; width: 100%; }
+    td, th { border: 1px solid #000; padding: 6px 10px; text-align: left; }
+    th { background: #eee; }
+    tr.you { background: #fffbe6; }
+    tr.you td:first-child::after { content: ' ← you'; font-size: 11px; color: #888; }
+  </style>
+</head>
+<body>
+
+  <p><small>Claude 2× Tracker · Mar 13 – Mar 28, 2026</small></p>
+
+  <p id="detectedLine"><small>Detecting your location…</small></p>
+
+  <hr>
+
+  <h2>Is Claude 2× active right now?</h2>
+
+  <p style="font-size:64px;margin:8px 0;line-height:1">
+    <span id="statusEmoji">⏳</span>
+    <strong id="statusWord">—</strong>
+  </p>
+
+  <p id="statusReason"></p>
+
+  <hr>
+
+  <p>
+    <b>Your time:</b> <span id="localTime">—</span><br>
+    <b>Eastern Time (ET):</b> <span id="etTime">—</span>
+  </p>
+
+  <p id="countdownBlock">
+    <b id="countdownLabel">—</b> <span id="countdownTimer" style="font-size:1.4em">—</span><br>
+    <small id="countdownSub"></small>
+  </p>
+
+  <hr>
+
+  <p><b>Weekends (Sat &amp; Sun): always 2×</b> — no restrictions all day.</p>
+
+  <hr>
+
+  <h3>Peak hours by timezone (weekdays · normal limits)</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Timezone</th>
+        <th>Peak window</th>
+        <th>Status now</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>PT (PDT)</td><td>5:00 – 11:00 AM</td><td id="tz-pt">—</td></tr>
+      <tr><td>ET (EDT)</td><td>8:00 AM – 2:00 PM</td><td id="tz-et">—</td></tr>
+      <tr><td>GMT / UTC</td><td>12:00 – 6:00 PM</td><td id="tz-gmt">—</td></tr>
+      <tr><td>UAE / GST</td><td>4:00 – 10:00 PM</td><td id="tz-gst">—</td></tr>
+      <tr><td>IST</td><td>5:30 – 11:30 PM</td><td id="tz-ist">—</td></tr>
+      <tr><td>SGT / HKT</td><td>8:00 PM – 2:00 AM</td><td id="tz-sgt">—</td></tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <p>
+    <small>
+      Built entirely with Claude Code ·
+      <a href="https://github.com/rishikeshsreehari/2xclaude" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle">
+          <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+      </a> ·
+      <a href="https://x.com/rishikeshshari" target="_blank" rel="noopener">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.261 5.635 5.902-5.635Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </a> ·
+      <a href="https://rishikeshs.com" target="_blank" rel="noopener">Made by Rishikesh</a>
+    </small>
+  </p>
+
+  <script>
+    const TZ_COUNTRY = {
+      'America/New_York':'United States','America/Chicago':'United States',
+      'America/Denver':'United States','America/Los_Angeles':'United States',
+      'America/Phoenix':'United States','America/Anchorage':'United States',
+      'Pacific/Honolulu':'United States','America/Indiana/Indianapolis':'United States',
+      'America/Toronto':'Canada','America/Vancouver':'Canada',
+      'America/Winnipeg':'Canada','America/Halifax':'Canada',
+      'America/Edmonton':'Canada','America/Mexico_City':'Mexico',
+      'America/Sao_Paulo':'Brazil','America/Argentina/Buenos_Aires':'Argentina',
+      'America/Santiago':'Chile','America/Bogota':'Colombia',
+      'America/Lima':'Peru','America/Caracas':'Venezuela',
+      'Europe/London':'United Kingdom','Europe/Dublin':'Ireland',
+      'Europe/Lisbon':'Portugal','Europe/Paris':'France',
+      'Europe/Berlin':'Germany','Europe/Amsterdam':'Netherlands',
+      'Europe/Brussels':'Belgium','Europe/Madrid':'Spain',
+      'Europe/Rome':'Italy','Europe/Zurich':'Switzerland',
+      'Europe/Vienna':'Austria','Europe/Stockholm':'Sweden',
+      'Europe/Oslo':'Norway','Europe/Copenhagen':'Denmark',
+      'Europe/Helsinki':'Finland','Europe/Warsaw':'Poland',
+      'Europe/Prague':'Czech Republic','Europe/Budapest':'Hungary',
+      'Europe/Bucharest':'Romania','Europe/Athens':'Greece',
+      'Europe/Istanbul':'Turkey','Europe/Moscow':'Russia',
+      'Europe/Kyiv':'Ukraine','Europe/Kiev':'Ukraine',
+      'Asia/Dubai':'UAE','Asia/Muscat':'Oman',
+      'Asia/Riyadh':'Saudi Arabia','Asia/Baghdad':'Iraq',
+      'Asia/Tehran':'Iran','Asia/Kabul':'Afghanistan',
+      'Asia/Karachi':'Pakistan','Asia/Kolkata':'India',
+      'Asia/Colombo':'Sri Lanka','Asia/Dhaka':'Bangladesh',
+      'Asia/Kathmandu':'Nepal','Asia/Yangon':'Myanmar',
+      'Asia/Bangkok':'Thailand','Asia/Jakarta':'Indonesia',
+      'Asia/Singapore':'Singapore','Asia/Kuala_Lumpur':'Malaysia',
+      'Asia/Manila':'Philippines','Asia/Ho_Chi_Minh':'Vietnam',
+      'Asia/Shanghai':'China','Asia/Hong_Kong':'Hong Kong',
+      'Asia/Taipei':'Taiwan','Asia/Seoul':'South Korea',
+      'Asia/Tokyo':'Japan','Asia/Almaty':'Kazakhstan',
+      'Asia/Tashkent':'Uzbekistan','Asia/Baku':'Azerbaijan',
+      'Asia/Tbilisi':'Georgia','Asia/Yerevan':'Armenia',
+      'Australia/Sydney':'Australia','Australia/Melbourne':'Australia',
+      'Australia/Brisbane':'Australia','Australia/Perth':'Australia',
+      'Australia/Adelaide':'Australia',
+      'Pacific/Auckland':'New Zealand','Pacific/Fiji':'Fiji',
+      'Africa/Cairo':'Egypt','Africa/Lagos':'Nigeria',
+      'Africa/Johannesburg':'South Africa','Africa/Nairobi':'Kenya',
+      'Africa/Casablanca':'Morocco','Africa/Accra':'Ghana',
+    };
+
+    function getET(date) {
+      const fmt = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        year:'numeric', month:'2-digit', day:'2-digit',
+        hour:'2-digit', minute:'2-digit', second:'2-digit',
+        hour12: false, weekday:'long'
+      });
+      const p = {};
+      fmt.formatToParts(date).forEach(x => { if (x.type !== 'literal') p[x.type] = x.value; });
+      let hour = parseInt(p.hour);
+      if (hour === 24) hour = 0;
+      return { year:parseInt(p.year), month:parseInt(p.month), day:parseInt(p.day),
+               weekday:p.weekday, hour, minute:parseInt(p.minute), second:parseInt(p.second) };
+    }
+
+    function promoState(et) {
+      const ms = Date.UTC(et.year, et.month-1, et.day);
+      if (ms < Date.UTC(2026,2,13)) return 'before';
+      if (ms > Date.UTC(2026,2,28)) return 'ended';
+      return 'active';
+    }
+
+    function isWeekend(w) { return w === 'Saturday' || w === 'Sunday'; }
+    function check2x(et) {
+      if (isWeekend(et.weekday)) return true;
+      return et.hour < 8 || et.hour >= 14;
+    }
+
+    function secsToNext(et, active) {
+      const s = et.hour*3600 + et.minute*60 + et.second, E = 86400;
+      if (active) {
+        if (et.weekday === 'Saturday') return (E-s) + E + 8*3600;
+        if (et.weekday === 'Sunday')   return (E-s) + 8*3600;
+        if (et.hour < 8)               return 8*3600 - s;
+        if (et.weekday === 'Friday')   return (E-s) + E + E + 8*3600;
+        return (E-s) + 8*3600;
+      }
+      return 14*3600 - s;
+    }
+
+    function fmtDuration(secs) {
+      secs = Math.max(0, Math.floor(secs));
+      const h = Math.floor(secs/3600), m = Math.floor((secs%3600)/60), s = secs%60;
+      if (h > 0) return `${h}h ${String(m).padStart(2,'0')}m`;
+      if (m > 0) return `${m}m ${String(s).padStart(2,'0')}s`;
+      return `${s}s`;
+    }
+
+    function fmtTime(date, tz) {
+      return new Intl.DateTimeFormat('en-US', {
+        timeZone: tz||undefined, weekday:'short',
+        hour:'numeric', minute:'2-digit', second:'2-digit', hour12:true
+      }).format(date);
+    }
+
+    function fmtTarget(date) {
+      return new Intl.DateTimeFormat('en-US', {
+        timeZone:'America/New_York', weekday:'short',
+        month:'short', day:'numeric', hour:'numeric', minute:'2-digit', hour12:true
+      }).format(date) + ' ET';
+    }
+
+    function getTZAbbr(tz) {
+      try {
+        return new Intl.DateTimeFormat('en-US',{timeZone:tz,timeZoneName:'short'})
+          .formatToParts(new Date()).find(p=>p.type==='timeZoneName')?.value||'';
+      } catch { return ''; }
+    }
+
+    function initDetection() {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const abbr = getTZAbbr(tz);
+      const country = TZ_COUNTRY[tz] || null;
+      const parts = [country ? `<b>${country}</b>` : null, `<b>${tz}</b>`, abbr ? `<b>${abbr}</b>` : null].filter(Boolean);
+      document.getElementById('detectedLine').innerHTML =
+        `<small>Detected: ${parts.join(' · ')}</small>`;
+    }
+
+    const TZ_IDS = ['tz-pt','tz-et','tz-gmt','tz-gst','tz-ist','tz-sgt'];
+    function setBadges(state) {
+      TZ_IDS.forEach(id => {
+        document.getElementById(id).textContent =
+          state === 'on' ? '✅ 2× ON' : state === 'off' ? '❌ 2× OFF' : '—';
+      });
+    }
+
+    function update() {
+      const now = new Date(), et = getET(now);
+      document.getElementById('localTime').textContent = fmtTime(now);
+      document.getElementById('etTime').textContent    = fmtTime(now,'America/New_York');
+
+      const ps = promoState(et);
+
+      if (ps === 'ended') {
+        document.getElementById('statusEmoji').textContent  = '🔚';
+        document.getElementById('statusWord').textContent   = 'Ended';
+        document.getElementById('statusReason').textContent = 'The promotion ended on March 28, 2026.';
+        document.getElementById('countdownBlock').style.display = 'none';
+        setBadges('na'); return;
+      }
+      if (ps === 'before') {
+        document.getElementById('statusEmoji').textContent  = '⏳';
+        document.getElementById('statusWord').textContent   = '—';
+        document.getElementById('statusReason').textContent = 'Promotion starts March 13, 2026.';
+        document.getElementById('countdownBlock').style.display = 'none';
+        setBadges('na'); return;
+      }
+
+      const active = check2x(et);
+      const secs   = secsToNext(et, active);
+      const tgt    = new Date(now.getTime() + secs*1000);
+
+      if (active) {
+        document.getElementById('statusEmoji').textContent = '✅';
+        document.getElementById('statusWord').textContent  = 'YES';
+        document.getElementById('statusReason').textContent =
+          isWeekend(et.weekday) ? 'Weekend — 2× active all day' :
+          et.hour < 8 ? 'Before peak hours (8 AM ET) — 2× active' :
+          'After peak hours (2 PM ET) — 2× active';
+        document.getElementById('countdownLabel').textContent  = '2× ends in:';
+        document.getElementById('countdownSub').textContent    = `Resumes normal at ${fmtTarget(tgt)}`;
+        setBadges('on');
+      } else {
+        document.getElementById('statusEmoji').textContent = '❌';
+        document.getElementById('statusWord').textContent  = 'NO';
+        document.getElementById('statusReason').textContent = 'Peak hours 8 AM–2 PM ET — normal limits apply';
+        document.getElementById('countdownLabel').textContent  = '2× resumes in:';
+        document.getElementById('countdownSub').textContent    = `Off-peak from ${fmtTarget(tgt)}`;
+        setBadges('off');
+      }
+
+      document.getElementById('countdownTimer').textContent = fmtDuration(secs);
+    }
+
+    // Dynamic tab title
+    function updateTitle(active) {
+      document.title = active ? '✅ Claude 2× is ON' : '❌ Claude 2× is OFF';
+    }
+
+    // Highlight user's timezone row
+    function highlightUserTZ() {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const map = {
+        'PT': ['America/Los_Angeles','America/Vancouver','America/Tijuana'],
+        'ET': ['America/New_York','America/Toronto','America/Detroit','America/Indiana/Indianapolis'],
+        'GMT': ['Europe/London','Atlantic/Reykjavik','Africa/Abidjan','Africa/Accra'],
+        'GST': ['Asia/Dubai','Asia/Muscat'],
+        'IST': ['Asia/Kolkata','Asia/Colombo'],
+        'SGT': ['Asia/Singapore','Asia/Kuala_Lumpur','Asia/Hong_Kong','Asia/Taipei','Asia/Shanghai'],
+      };
+      const rowIds = { PT:'tz-pt', ET:'tz-et', GMT:'tz-gmt', GST:'tz-gst', IST:'tz-ist', SGT:'tz-sgt' };
+      for (const [key, tzList] of Object.entries(map)) {
+        if (tzList.includes(tz)) {
+          const cell = document.getElementById(rowIds[key]);
+          if (cell) cell.closest('tr').classList.add('you');
+          break;
+        }
+      }
+    }
+
+    initDetection();
+    highlightUserTZ();
+
+    const _origUpdate = update;
+    update = function() {
+      _origUpdate();
+      const active = document.getElementById('statusWord').textContent === 'YES';
+      updateTitle(active);
+    };
+
+    update();
+    setInterval(update, 1000);
+  </script>
+</body>
+</html>
